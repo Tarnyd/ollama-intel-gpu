@@ -28,8 +28,7 @@
   <Overview>Ollama for Intel Arc GPUs (B580, A770, A750, etc.) powered by Intel IPEX-LLM. Drop-in replacement for the standard Ollama container — same API on port 11434. Requires an Intel Arc GPU with /dev/dri available on the host.</Overview>
   <Category>AI: Tools:</Category>
   <WebUI>http://[IP]:[PORT:11434]/</WebUI>
-  <!-- TODO: replace <user> with your GitHub user/repo once pushed -->
-  <TemplateURL>https://raw.githubusercontent.com/&lt;user&gt;/ollama-intel-gpu/main/ollama-intel-gpu.xml</TemplateURL>
+  <TemplateURL>https://raw.githubusercontent.com/tarnyd/ollama-intel-gpu/main/ollama-intel-gpu.xml</TemplateURL>
   <Icon>https://raw.githubusercontent.com/ollama/ollama/main/docs/ollama.png</Icon>
   <ExtraParams>--device=/dev/dri</ExtraParams>
   <PostArgs/>
