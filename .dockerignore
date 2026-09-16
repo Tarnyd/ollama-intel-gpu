@@ -1,0 +1,6 @@
+.env
+ollama-data/
+open-webui-data/
+*.tgz
+*.zip
+*.deb

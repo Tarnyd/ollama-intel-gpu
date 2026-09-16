@@ -1,0 +1,8 @@
+# Force LF line endings for shell scripts and XML so they work on Unraid/Linux
+# even when edited on Windows.
+*.sh text eol=lf
+entrypoint.sh text eol=lf
+*.xml text eol=lf
+Dockerfile text eol=lf
+*.yml text eol=lf
+.env.example text eol=lf

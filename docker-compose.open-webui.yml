@@ -1,0 +1,27 @@
+# Ollama (Intel Arc) + Open WebUI. Open WebUI talks to Ollama over the
+# internal docker network; only WebUI (3000) and Ollama (11434) are published.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.open-webui.yml up -d --build
+services:
+  ollama-intel-gpu:
+    extends:
+      file: docker-compose.yml
+      service: ollama-intel-gpu
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: unless-stopped
+    depends_on:
+      ollama-intel-gpu:
+        condition: service_healthy
+    ports:
+      - "${WEBUI_PORT:-3000}:8080"
+    volumes:
+      - open-webui-data:/app/backend/data
+    environment:
+      - OLLAMA_BASE_URL=http://ollama-intel-gpu:11434
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+volumes:
+  open-webui-data: {}
