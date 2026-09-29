@@ -38,8 +38,9 @@ no personal names, emails, IPs, tokens or host paths.
 4. **Keep `OLLAMA_INTEL_GPU=1` baked in, keep `ONEAPI_DEVICE_SELECTOR` unset.**
    The flag gates oneAPI discovery (`discover/gpu.go: if envconfig.IntelGPU()`);
    without it the server silently uses CPU (verified 2026-09-29 on Arc A380).
-   The selector is only for multi-GPU hosts (set manually); a forced default
-   broke single-GPU discovery. Intel ships it commented out — do the same.
+   The selector is unneeded on single-GPU hosts (proven harmless there, but
+   only multi-GPU hosts benefit from setting it manually). Intel ships it
+   commented out — do the same.
 5. **Public-safe.** No usernames (except the `tarnyd` image namespace and
    documented `<user>` TODO placeholders), no IPs, no tokens, no local paths
    outside `/mnt/user/appdata/...` examples and `ollama-data` volumes.

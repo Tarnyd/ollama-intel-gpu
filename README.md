@@ -208,8 +208,9 @@ CI flow: set repo secrets `DOCKERHUB_USERNAME` + `DOCKERHUB_TOKEN`
 - **Log shows `library=cpu` but drivers are fine** (`clinfo`/`zeInit` see the
   card) — check two things: (1) `OLLAMA_INTEL_GPU=1` must be set (baked into
   this image; it gates oneAPI discovery — without it ollama never probes
-  Level-Zero); (2) `ONEAPI_DEVICE_SELECTOR` must be *unset* on single-GPU
-  systems. Verify with `docker logs <name> | grep "inference compute"`.
+  Level-Zero); (2) `ONEAPI_DEVICE_SELECTOR` is unneeded on single-GPU
+  systems — leave it unset (proven harmless either way, but only multi-GPU
+  hosts benefit). Verify with `docker logs <name> | grep "inference compute"`.
 - **Multiple GPUs (iGPU + Arc)** — add `ONEAPI_DEVICE_SELECTOR` manually
   (extra Variable in Unraid, e.g. `level_zero:1`). It is deliberately unset
   by default: single-GPU systems must not set it.

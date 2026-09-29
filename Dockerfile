@@ -130,7 +130,8 @@ ENV OLLAMA_HOST=0.0.0.0:11434 \
     OLLAMA_KEEP_ALIVE=10m
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh && \
+    ln -sf /ollama /usr/local/bin/ollama
 
 EXPOSE 11434
 VOLUME ["/root/.ollama"]
