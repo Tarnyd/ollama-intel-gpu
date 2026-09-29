@@ -109,15 +109,22 @@ RUN wget -q -P /tmp "https://github.com/${IPEXLLM_RELEASE_REPO}/releases/downloa
 # ---------------------------------------------------------------------------
 # IPEX-LLM / Intel GPU settings (same as Intel's start-ollama.sh, minus the
 # hardcoded OLLAMA_HOST=127.0.0.1 which would break Docker networking).
+# OLLAMA_INTEL_GPU=1 is REQUIRED: it gates oneAPI discovery in ollama
+# (discover/gpu.go: "if envconfig.IntelGPU()") — without it the server
+# silently falls back to CPU even with a healthy driver stack.
+# NOTE: ONEAPI_DEVICE_SELECTOR is deliberately NOT set by default. Intel
+# ships it commented out in start-ollama.sh and it is only needed to pick
+# between multiple GPUs. An unconditional default broke single-GPU setups.
 ENV OLLAMA_NUM_GPU=999 \
+    OLLAMA_INTEL_GPU=1 \
     ZES_ENABLE_SYSMAN=1 \
     SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS=1 \
     SYCL_CACHE_PERSISTENT=1 \
     no_proxy=localhost,127.0.0.1
 
-# Ollama settings (all overridable with -e / Unraid template)
+# Ollama settings (all overridable with -e / Unraid template).
+# Multi-GPU hosts: add -e ONEAPI_DEVICE_SELECTOR=level_zero:1 (or :0) manually.
 ENV OLLAMA_HOST=0.0.0.0:11434 \
-    ONEAPI_DEVICE_SELECTOR=level_zero:0 \
     OLLAMA_NUM_PARALLEL=1 \
     OLLAMA_NUM_CTX=4096 \
     OLLAMA_KEEP_ALIVE=10m

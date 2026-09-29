@@ -35,10 +35,15 @@ no personal names, emails, IPs, tokens or host paths.
    `OLLAMA_HOST=127.0.0.1`. We run `/ollama serve` via `entrypoint.sh` so
    `OLLAMA_HOST` (default `0.0.0.0:11434`) is honoured. Never switch back to
    `start-ollama.sh` without fixing the bind address.
-4. **Public-safe.** No usernames (except the `tarnyd` image namespace and
+4. **Keep `OLLAMA_INTEL_GPU=1` baked in, keep `ONEAPI_DEVICE_SELECTOR` unset.**
+   The flag gates oneAPI discovery (`discover/gpu.go: if envconfig.IntelGPU()`);
+   without it the server silently uses CPU (verified 2026-09-29 on Arc A380).
+   The selector is only for multi-GPU hosts (set manually); a forced default
+   broke single-GPU discovery. Intel ships it commented out — do the same.
+5. **Public-safe.** No usernames (except the `tarnyd` image namespace and
    documented `<user>` TODO placeholders), no IPs, no tokens, no local paths
    outside `/mnt/user/appdata/...` examples and `ollama-data` volumes.
-5. **Small diffs.** Prefer editing existing files over adding new ones. Don't
+6. **Small diffs.** Prefer editing existing files over adding new ones. Don't
    create docs beyond README/CHANGELOG unless asked.
 
 ## 3. How to update the IPEX-LLM portable build
@@ -82,8 +87,9 @@ docker rm -f t
 ## 6. Unraid template rules
 
 - `Repository` stays `tarnyd/ollama-intel-gpu`; `ExtraParams` must contain
-  `--device=/dev/dri`; `Network` is `bridge`; keep the 7 Config entries
-  (Model Storage path, Port 11434, 5 Variables) with their defaults.
+  `--device=/dev/dri`; `Network` is `bridge`; keep the 6 Config entries
+  (Model Storage path, Port 11434, 4 Variables) with their defaults.
+  `ONEAPI_DEVICE_SELECTOR` is intentionally absent (single-GPU default).
 - `TemplateURL` must point at the raw `ollama-intel-gpu.xml` in the final git
   repo — replace the `<user>` placeholder at publish time, nowhere else.
 - Validate XML is well-formed after edits (open in a parser / `python -c

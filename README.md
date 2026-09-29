@@ -128,7 +128,8 @@ docker compose -f docker-compose.yml -f docker-compose.open-webui.yml up -d --bu
 | Variable | Default | Description |
 |---|---|---|
 | `OLLAMA_HOST` | `0.0.0.0:11434` | API listen address |
-| `ONEAPI_DEVICE_SELECTOR` | `level_zero:0` | Which Intel GPU to use |
+| `OLLAMA_INTEL_GPU` | `1` (baked in) | **Required.** Gates oneAPI discovery in ollama (`discover/gpu.go`); without it the server silently uses CPU despite a healthy driver stack |
+| `ONEAPI_DEVICE_SELECTOR` | unset (correct) | Only for multi-GPU hosts: set manually, e.g. `level_zero:1`. Do NOT set it on single-GPU systems |
 | `OLLAMA_NUM_GPU` | `999` | Offload all layers to GPU |
 | `OLLAMA_NUM_PARALLEL` | `1` | Parallel requests (keep 1 on ≤12 GB) |
 | `OLLAMA_NUM_CTX` | `4096` | Context window (tokens; more = more VRAM) |
@@ -204,8 +205,14 @@ CI flow: set repo secrets `DOCKERHUB_USERNAME` + `DOCKERHUB_TOKEN`
   always rebuild the PCIe address map, and a BIOS update resets every setting).
   Verified on: Gigabyte X570 AORUS ULTRA + Arc A380, where only the cold boot
   after the BIOS update created the 64-bit MMIO window.
-- **Multiple GPUs (iGPU + Arc)** — set `ONEAPI_DEVICE_SELECTOR=level_zero:1`
-  (or `:0`) to pick the right one.
+- **Log shows `library=cpu` but drivers are fine** (`clinfo`/`zeInit` see the
+  card) — check two things: (1) `OLLAMA_INTEL_GPU=1` must be set (baked into
+  this image; it gates oneAPI discovery — without it ollama never probes
+  Level-Zero); (2) `ONEAPI_DEVICE_SELECTOR` must be *unset* on single-GPU
+  systems. Verify with `docker logs <name> | grep "inference compute"`.
+- **Multiple GPUs (iGPU + Arc)** — add `ONEAPI_DEVICE_SELECTOR` manually
+  (extra Variable in Unraid, e.g. `level_zero:1`). It is deliberately unset
+  by default: single-GPU systems must not set it.
 - **OOM on 12 GB cards** — lower `OLLAMA_NUM_CTX` (2048), keep
   `OLLAMA_NUM_PARALLEL=1`, use smaller quants (`q4_K_M`).
 - **Open WebUI can't connect** — ensure `OLLAMA_ORIGINS=*` and
