@@ -203,6 +203,12 @@ between Ollama 0.9.x and current**, their stores can diverge.
 
 Notes:
 
+- If `OLLAMA_VULKAN` shows `false` in the logs despite being set: check for
+  **duplicate** variables. Some community templates ship their own
+  `OLLAMA_VULKAN=false` row — Docker lets the *last* `-e` win, silently
+  overriding yours. Keep exactly one row, set to `1`, and verify with
+  `docker exec <name> env | grep VULKAN`.
+
 - `gemma4:e4b` is 9.6 GB, the A380 has ~5.6 GB VRAM: Ollama partially
   offloads (rest runs on CPU). Works well, just not full-GPU speed. If you
   hit VRAM limits, lower `OLLAMA_NUM_CTX`.
