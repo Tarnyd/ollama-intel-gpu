@@ -164,7 +164,10 @@ The bundled llama.cpp/ggml is from July 2025: it runs everything with an
 architecture known at that time (`qwen3`, `llama3.x`, `mistral`, `gemma3`,
 `deepseek-r1`, `phi4`, …). Brand-new architectures fail at load with
 `unable to load model` — e.g. IFM's `K2-Horizon` family (Sep 2026), whose
-llama.cpp support PR was still in progress at release. There is no newer
+llama.cpp support PR was still in progress at release. Some very new
+registry entries refuse even earlier, at pull time with
+`412: requires a newer version of Ollama` (e.g. `gemma4`) — same root
+cause: the bundled Ollama core predates the model family. There is no newer
 IPEX-LLM portable to upgrade to (verified 2026-09-29); options are waiting
 for Intel, or building current llama.cpp/Ollama from source with a SYCL
 backend (see [Alternatives](#alternatives)). Rule of thumb: if the model
