@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+- README: troubleshooting entry for `library=cpu` fallback (Resizable BAR
+  verification + cold-boot requirement), verified on X570 AORUS ULTRA + Arc A380.
 
 ## [1.0.0] — 2026-09-16
 - Initial public release as `tarnyd/ollama-intel-gpu`.

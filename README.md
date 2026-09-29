@@ -193,6 +193,17 @@ CI flow: set repo secrets `DOCKERHUB_USERNAME` + `DOCKERHUB_TOKEN`
 - **`no compatible GPUs were discovered`** — userspace/host driver mismatch.
   Keep the pinned driver set; don't mix a bleeding-edge host stack with this
   portable build without testing.
+- **GPU visible in `/dev/dri` but log shows `library=cpu`** — Level-Zero found
+  0 devices. Almost always Resizable BAR: the Arc needs its full VRAM mapped.
+  Verify on the host (replace `0e:00.0` with your card's address from `lspci`):
+  `lspci -s 0e:00.0 -vvv | grep -iA3 'Resizable BAR'` should show
+  `current size` >= VRAM (e.g. 8GB on a 6GB A380), and `dmesg` must not contain
+  `Using a reduced BAR size` / `Failed to resize BAR`. Fix checklist: Above 4G
+  Decoding on, Re-Size BAR on/Auto, CSM off (pure UEFI boot), GPU in a
+  CPU-attached slot — then a **full cold boot** (PSU off; warm reboots don't
+  always rebuild the PCIe address map, and a BIOS update resets every setting).
+  Verified on: Gigabyte X570 AORUS ULTRA + Arc A380, where only the cold boot
+  after the BIOS update created the 64-bit MMIO window.
 - **Multiple GPUs (iGPU + Arc)** — set `ONEAPI_DEVICE_SELECTOR=level_zero:1`
   (or `:0`) to pick the right one.
 - **OOM on 12 GB cards** — lower `OLLAMA_NUM_CTX` (2048), keep
