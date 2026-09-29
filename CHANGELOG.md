@@ -1,11 +1,16 @@
 # Changelog
 
-## [1.1.1] — 2026-09-29
-- Fix: symlink `/ollama` to `/usr/local/bin/ollama` so the CLI is on `PATH`
-  (`docker exec <name> ollama ...` and the Unraid console previously failed
-  with "executable file not found in $PATH").
+## [1.1.2] — 2026-09-29
+- Fix: append `/` to `PATH` and pin `WORKDIR /`. The portable's launcher
+  resolves `ollama-lib`/`ollama-bin` via PATH — without it the CLI and model
+  runners die with "ollama-lib: not found" even when GPU discovery works.
+  (A bare symlink of `/ollama` alone was verified insufficient.)
 - Docs: corrected `ONEAPI_DEVICE_SELECTOR` wording (proven harmless on
   single-GPU, just unneeded — not the discovery bug).
+
+## [1.1.1] — 2026-09-29 (superseded)
+- Added `/ollama` symlink to `/usr/local/bin/ollama` (kept, but insufficient
+  alone — see 1.1.2).
 
 ## [1.1.0] — 2026-09-29
 - Fix: bake `OLLAMA_INTEL_GPU=1` into the image. It gates oneAPI discovery

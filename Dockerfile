@@ -133,6 +133,14 @@ COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh && \
     ln -sf /ollama /usr/local/bin/ollama
 
+# The IPEX-LLM portable is built to run from its own directory: the /ollama
+# launcher resolves ./ollama-lib and ./ollama-bin via PATH, so / must be on
+# it (appended last to avoid shadowing system tools). WORKDIR pins the CWD
+# assumption explicitly. Without this, `ollama` CLI and model runners fail
+# with "ollama-lib: not found" even though GPU discovery works.
+ENV PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/"
+WORKDIR /
+
 EXPOSE 11434
 VOLUME ["/root/.ollama"]
 
