@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!--
+  Unraid Community Applications template: stock Ollama with Vulkan on Intel Arc.
+
+  This uses the OFFICIAL ollama/ollama image (always current, e.g. v0.34.x),
+  whose bundled Vulkan backend + Intel ICD (ANV) drives Arc GPUs directly.
+  Use this for 2026-era models (Gemma 4, ...) that the IPEX-LLM portable
+  (Ollama 0.9.x core, see ollama-intel-gpu.xml) cannot load.
+
+  Vulkan is enabled by default when /dev/dri is present; OLLAMA_VULKAN=1 is
+  set explicitly to be sure. No custom image to build or pull beyond stock.
+
+  INSTALL (manual): Unraid -> Docker -> Add Container -> Template, paste:
+    https://raw.githubusercontent.com/Tarnyd/ollama-intel-gpu/main/ollama-intel-gpu-vulkan.xml
+
+  NOTE: keep a separate Model Storage path from the IPEX container, and a
+  different host port if you run both side by side.
+-->
+<Container version="2">
+  <Name>ollama-vulkan</Name>
+  <Repository>ollama/ollama</Repository>
+  <Registry>https://hub.docker.com/_/ollama/</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>bash</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/Tarnyd/ollama-intel-gpu</Support>
+  <Project>https://ollama.com/</Project>
+  <ReadMe/>
+  <Overview>Stock Ollama (always current) with Vulkan GPU acceleration for Intel Arc (B580, A770, A750, A380, ...). Same API on port 11434. For 2026-era models such as Gemma 4 that the IPEX-LLM based image cannot load. Requires an Intel Arc GPU with /dev/dri available on the host. Note: models larger than VRAM run partially offloaded (remainder on CPU).</Overview>
+  <Category>AI: Tools:</Category>
+  <WebUI>http://[IP]:[PORT:11434]/</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/Tarnyd/ollama-intel-gpu/main/ollama-intel-gpu-vulkan.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/ollama/ollama/main/docs/ollama.png</Icon>
+  <ExtraParams>--device=/dev/dri</ExtraParams>
+  <PostArgs/>
+  <CPUset/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires>Intel Arc GPU with kernel driver loaded (/dev/dri on host). Vulkan backend is bundled in the stock image and auto-enables.</Requires>
+  <Config Name="Model Storage" Target="/root/.ollama" Default="/mnt/user/appdata/ollama-vulkan" Mode="rw" Description="Separate model storage from the IPEX container. Models are large (4-20 GB each)." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/ollama-vulkan</Config>
+  <Config Name="Ollama API Port" Target="11434" Default="11434" Mode="tcp" Description="Port for the Ollama API. Change (e.g. 11435) if you run the IPEX container side by side." Type="Port" Display="always" Required="true" Mask="false">11434</Config>
+  <Config Name="OLLAMA_VULKAN" Target="OLLAMA_VULKAN" Default="1" Mode="" Description="Enable the Vulkan GPU backend (bundled, auto-enables with /dev/dri; set explicitly to be sure). Set to 0 to force CPU." Type="Variable" Display="always" Required="false" Mask="false">1</Config>
+  <Config Name="OLLAMA_ORIGINS" Target="OLLAMA_ORIGINS" Default="*" Mode="" Description="Allowed origins for CORS. Set to * to allow Open WebUI and other frontends to connect." Type="Variable" Display="always" Required="false" Mask="false">*</Config>
+  <Config Name="OLLAMA_KEEP_ALIVE" Target="OLLAMA_KEEP_ALIVE" Default="5m" Mode="" Description="How long to keep a model loaded in VRAM after the last request. Use 5m, -1 for forever, 0 to unload immediately." Type="Variable" Display="always" Required="false" Mask="false">5m</Config>
+  <TailscaleStateDir/>
+</Container>

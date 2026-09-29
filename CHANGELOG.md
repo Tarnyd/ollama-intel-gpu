@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.0] — 2026-09-29
+- New: Vulkan track for current models. Stock `ollama/ollama` (e.g. v0.34.x)
+  bundles the Vulkan backend + Intel ICD and auto-enables on Arc — no custom
+  image needed. Adds `ollama-intel-gpu-vulkan.xml` (Unraid template),
+  `docker-compose.vulkan.yml`, and a README section. Verified Gemma 4
+  (`gemma4:e4b`) requires this track: the IPEX portable (0.9.x core) 412-gates
+  it at pull time. Note: 9.6 GB model on 5.6 GB VRAM runs partially offloaded.
+
 ## [1.1.2] — 2026-09-29
 - Fix: append `/` to `PATH` and pin `WORKDIR /`. The portable's launcher
   resolves `ollama-lib`/`ollama-bin` via PATH — without it the CLI and model

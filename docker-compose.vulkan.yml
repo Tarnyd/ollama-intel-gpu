@@ -1,0 +1,26 @@
+# Stock Ollama + Vulkan on Intel Arc (for 2026-era models like Gemma 4).
+# No local build: uses official ollama/ollama (Vulkan backend + Intel ICD
+# bundled, auto-enabled with /dev/dri). Runs beside the IPEX container:
+# different name, port (11435) and volume.
+# Usage: docker compose -f docker-compose.vulkan.yml up -d
+services:
+  ollama-vulkan:
+    image: ollama/ollama:latest
+    container_name: ollama-vulkan
+    restart: unless-stopped
+    devices:
+      - /dev/dri:/dev/dri
+    ports:
+      - "${OLLAMA_VULKAN_PORT:-11435}:11434"
+    volumes:
+      - ollama-vulkan-data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+      - OLLAMA_VULKAN=1
+      - OLLAMA_ORIGINS=${OLLAMA_ORIGINS:-*}
+      - OLLAMA_KEEP_ALIVE=${OLLAMA_KEEP_ALIVE:-5m}
+      # Multi-GPU hosts only: pin the Arc card, e.g. GGML_VK_VISIBLE_DEVICES=1
+      # - GGML_VK_VISIBLE_DEVICES=${GGML_VK_VISIBLE_DEVICES}
+
+volumes:
+  ollama-vulkan-data: {}

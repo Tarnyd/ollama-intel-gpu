@@ -173,6 +173,44 @@ for Intel, or building current llama.cpp/Ollama from source with a SYCL
 backend (see [Alternatives](#alternatives)). Rule of thumb: if the model
 family was released after ~July 2025, check llama.cpp support first.
 
+## Running current Ollama via Vulkan (Gemma 4 and other 2026 models)
+
+The IPEX-LLM image above is capped at Ollama 0.9.x and can never load
+2026-era architectures. For those, run the **stock `ollama/ollama` image**
+(current, e.g. v0.34.x): it bundles the Vulkan backend **and** the Intel
+Vulkan driver (ANV), which auto-enables on Arc with `--device=/dev/dri`.
+No custom build needed — verified 2026-09-29 that the stock image ships
+`intel_icd.json` + the `vulkan` runner.
+
+```bash
+docker run -d --name ollama-vulkan \
+  --device=/dev/dri \
+  -p 11435:11434 \
+  -v ollama-vulkan-data:/root/.ollama \
+  -e OLLAMA_VULKAN=1 -e OLLAMA_ORIGINS='*' \
+  --restart unless-stopped \
+  ollama/ollama:latest
+
+docker logs ollama-vulkan | grep "inference compute"   # expect library=vulkan
+docker exec -it ollama-vulkan ollama run gemma4:e4b "Hej!"
+```
+
+Or with compose: `docker compose -f docker-compose.vulkan.yml up -d`.
+On Unraid, install via the `ollama-intel-gpu-vulkan.xml` template
+(raw URL in this repo). It runs beside the IPEX container — separate name,
+port (11435) and model storage on purpose; **do not share one volume
+between Ollama 0.9.x and current**, their stores can diverge.
+
+Notes:
+
+- `gemma4:e4b` is 9.6 GB, the A380 has ~5.6 GB VRAM: Ollama partially
+  offloads (rest runs on CPU). Works well, just not full-GPU speed. If you
+  hit VRAM limits, lower `OLLAMA_NUM_CTX`.
+- Vulkan on Arc is upstream-experimental; occasional quirks are possible.
+  Multi-GPU hosts: pin the card with `GGML_VK_VISIBLE_DEVICES`.
+- Keep the IPEX container for pre-July-2025 models if you want to compare
+  backends (oneAPI vs Vulkan) on your own card.
+
 ## Updating versions
 
 1. Check [`ipex-llm/ipex-llm` releases (`v2.3.0-nightly`)](https://github.com/ipex-llm/ipex-llm/releases/tag/v2.3.0-nightly)

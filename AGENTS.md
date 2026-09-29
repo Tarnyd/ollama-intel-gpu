@@ -12,7 +12,10 @@ no personal names, emails, IPs, tokens or host paths.
   Keep it POSIX-ish bash, no secrets, no network calls.
 - `docker-compose.yml` — local run (builds image, `/dev/dri`, volume, env).
 - `docker-compose.open-webui.yml` — extends the above with Open WebUI.
-- `ollama-intel-gpu.xml` — Unraid Community Applications template.
+- `ollama-intel-gpu.xml` — Unraid Community Applications template (IPEX track).
+- `ollama-intel-gpu-vulkan.xml` + `docker-compose.vulkan.yml` — Vulkan track:
+  stock `ollama/ollama` image, no build/push of our own. Only touch these for
+  template/compose fixes; the image itself is upstream's.
 - `.github/workflows/docker-build-push.yml` — CI: buildx `linux/amd64`,
   push to `tarnyd/ollama-intel-gpu` on non-PR runs.
 - `scripts/{build,run,test-api,push}.sh` — thin wrappers around docker CLI.
