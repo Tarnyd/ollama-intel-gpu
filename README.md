@@ -158,6 +158,18 @@ Or: `./scripts/test-api.sh`.
 - **Drivers:** IGC v2.8.3, compute-runtime 25.09.32961.7, Level-Zero loader v1.21.9
 - **Healthcheck:** `curl http://127.0.0.1:11434/` every 30 s
 
+## Model compatibility
+
+The bundled llama.cpp/ggml is from July 2025: it runs everything with an
+architecture known at that time (`qwen3`, `llama3.x`, `mistral`, `gemma3`,
+`deepseek-r1`, `phi4`, …). Brand-new architectures fail at load with
+`unable to load model` — e.g. IFM's `K2-Horizon` family (Sep 2026), whose
+llama.cpp support PR was still in progress at release. There is no newer
+IPEX-LLM portable to upgrade to (verified 2026-09-29); options are waiting
+for Intel, or building current llama.cpp/Ollama from source with a SYCL
+backend (see [Alternatives](#alternatives)). Rule of thumb: if the model
+family was released after ~July 2025, check llama.cpp support first.
+
 ## Updating versions
 
 1. Check [`ipex-llm/ipex-llm` releases (`v2.3.0-nightly`)](https://github.com/ipex-llm/ipex-llm/releases/tag/v2.3.0-nightly)
